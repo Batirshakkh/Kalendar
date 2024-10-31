@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yillik Kalendar</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin: 10px;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .month {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .month h2 {
+            text-align: center;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+            color: #555;
+        }
+        .day {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .day.weekend {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .day.today {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yillik Kalendar</h1>
+    <div class="calendar" id="calendar"></div>
+
+    <script>
+        // JavaScript
+        const months = [
+            "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", 
+            "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"
+        ];
+        const daysOfWeek = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
+
+        function createCalendar() {
+            const calendar = document.getElementById("calendar");
+            calendar.innerHTML = ""; // Kalendarni har yangilanganda tozalash
+
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const currentDay = currentDate.getDate();
+
+            months.forEach((month, monthIndex) => {
+                const monthDiv = document.createElement("div");
+                monthDiv.classList.add("month");
+
+                const monthTitle = document.createElement("h2");
+                monthTitle.textContent = `${month} ${currentYear}`;
+                monthDiv.appendChild(monthTitle);
+
+                const daysDiv = document.createElement("div");
+                daysDiv.classList.add("days");
+
+                daysOfWeek.forEach(day => {
+                    const dayDiv = document.createElement("div");
+                    dayDiv.classList.add("day");
+                    dayDiv.textContent = day;
+                    daysDiv.appendChild(dayDiv);
+                });
+
+                const firstDay = new Date(currentYear, monthIndex, 1).getDay();
+                const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+
+                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+                    const emptyDiv = document.createElement("div");
+                    emptyDiv.classList.add("day");
+                    daysDiv.appendChild(emptyDiv);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayDiv = document.createElement("div");
+                    dayDiv.classList.add("day");
+                    dayDiv.textContent = day;
+
+                    const weekDay = new Date(currentYear, monthIndex, day).getDay();
+                    if (weekDay === 0 || weekDay === 6) {
+                        dayDiv.classList.add("weekend");
+                    }
+
+                    if (monthIndex === currentMonth && day === currentDay) {
+                        dayDiv.classList.add("today");
+                    }
+
+                    daysDiv.appendChild(dayDiv);
+                }
+
+                monthDiv.appendChild(daysDiv);
+                calendar.appendChild(monthDiv);
+            });
+        }
+
+        // Har kuni yangilanishi uchun funksiyani ishga tushirish
+        createCalendar();
+
+        // Har kuni soat 00:00 da kalendarni yangilash
+        const now = new Date();
+        const timeUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
+        setTimeout(() => {
+            createCalendar();
+            setInterval(createCalendar, 24 * 60 * 60 * 1000); // Har 24 soatda bir marta qayta ishlatish
+        }, timeUntilMidnight);
+    </script>
+</body>
+</html>
